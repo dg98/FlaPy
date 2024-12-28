@@ -455,7 +455,11 @@ class FlakyAnalyser:
         naming_offset = 0 if self._config.random_order_bucket is None else self._config.num_runs
         repo_copy_dir = self._temp_path / "flapy_repo_copy"
 
-        # TODO add option to run tests_to_be_run one at a time or all togehter
+        # add option to run tests_to_be_run one at a time or all together
+        tests_to_be_run = [self._tests_to_be_run]
+        if not self._config.run_tests_together:
+            tests_to_be_run = self._tests_to_be_run.split()
+
         for test_to_be_run in self._tests_to_be_run.split() or [""]:
             for i in range(self._config.num_runs):
                 self._logger.info(
@@ -468,7 +472,7 @@ class FlakyAnalyser:
 
                 try:
                     run_num = i + naming_offset
-                    ttbr_id = test_to_be_run.replace("/", ".")
+                    ttbr_id = test_to_be_run.split()[0].replace("/", ".")
 
                     def get_output_filename(keyword, ending) -> Path:
                         return (
@@ -584,6 +588,15 @@ class FlakyAnalyser:
                  "Multiple names must be separated by spaces and "
                  "will be executed each individually in a new pytest run. "
                  'Example: "tests/test_file.py::test_func1 tests/test_file.py::TestClass::test_func2',
+        )
+        parser.add_argument(
+            "--run-tests-together",
+            dest="run_tests_together",
+            required=False,
+            type=int,
+            default=1,
+            help="If set to 1, tests_to_be_run are runall togehter. "
+                 "If set to 0, tests_to_be_run will be executed each individually in a new pytest run. "
         )
         parser.add_argument(
             "--collect-sqlite-coverage-database",
