@@ -460,7 +460,7 @@ class FlakyAnalyser:
         if not self._config.run_tests_together:
             tests_to_be_run = self._tests_to_be_run.split()
 
-        for test_to_be_run in self._tests_to_be_run.split() or [""]:
+        for test_to_be_run in tests_to_be_run or [""]:
             for i in range(self._config.num_runs):
                 self._logger.info(
                     f"Iteration {i} of {self._config.num_runs} for project {self._config.project_name} (random={self._config.random_order_bucket})"
@@ -472,7 +472,7 @@ class FlakyAnalyser:
 
                 try:
                     run_num = i + naming_offset
-                    ttbr_id = test_to_be_run.split()[0].replace("/", ".")
+                    ttbr_id = f"t{i}"
 
                     def get_output_filename(keyword, ending) -> Path:
                         return (
